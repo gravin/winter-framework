@@ -1,7 +1,9 @@
-package org.winterframework.beans.factory;
+package org.winterframework.tests;
 
-import com.codeanalysis.MyTestBean;
-import org.springframework.core.io.ClassPathResource;
+
+import org.winterframework.beans.factory.BeanFactory;
+import org.winterframework.beans.factory.XmlBeanFactory;
+import org.winterframework.core.io.ClassPathResource;
 
 public class Application {
     public static void main(String[] args) {

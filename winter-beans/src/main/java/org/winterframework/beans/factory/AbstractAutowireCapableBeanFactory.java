@@ -1,7 +1,6 @@
 package org.winterframework.beans.factory;
 
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory
         implements AutowireCapableBeanFactory {
@@ -22,7 +21,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             instanceWrapper = createBeanInstance(beanName, mbd, args);
         }
         final Object bean = (instanceWrapper != null ? instanceWrapper.getWrappedInstance() : null);
-        Class<?> beanType = (instanceWrapper != null ? instanceWrapper.getWrappedClass() : null);
 
         // Initialize the bean instance.
         Object exposedObject = bean;

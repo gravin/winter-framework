@@ -2,12 +2,12 @@ package org.winterframework.beans.factory;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
-import org.springframework.util.CollectionUtils;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.*;
+import org.winterframework.core.io.ClassPathResource;
+import org.winterframework.core.io.Resource;
+import org.winterframework.core.io.support.PropertiesLoaderUtils;
+import org.winterframework.util.CollectionUtils;
 import org.xml.sax.*;
 
 import javax.xml.parsers.DocumentBuilder;

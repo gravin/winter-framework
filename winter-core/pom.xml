@@ -9,13 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>winter-beans</artifactId>
+    <artifactId>winter-core</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.winterframework</groupId>
-            <artifactId>winter-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+
 </project>

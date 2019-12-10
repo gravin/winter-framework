@@ -1,6 +1,7 @@
 package org.winterframework.beans.factory;
 
-import org.springframework.util.Assert;
+
+import org.winterframework.util.Assert;
 
 public class RuntimeBeanReference implements BeanReference {
 

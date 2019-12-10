@@ -19,9 +19,30 @@
 	<modules>
 
 		<module>winter-beans</module>
+		<module>winter-core</module>
 	</modules>
 
 	<dependencies>
+
+		<!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+		<!-- commons apache start -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.62</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

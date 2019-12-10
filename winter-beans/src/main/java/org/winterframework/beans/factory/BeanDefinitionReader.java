@@ -1,7 +1,7 @@
 package org.winterframework.beans.factory;
 
 
-import org.springframework.core.io.Resource;
+import org.winterframework.core.io.Resource;
 
 public interface BeanDefinitionReader {
 
