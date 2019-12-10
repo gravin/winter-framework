@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>winter-beans</artifactId>
-
+    <name>winter-beans</name>
     <dependencies>
         <dependency>
             <groupId>org.winterframework</groupId>
