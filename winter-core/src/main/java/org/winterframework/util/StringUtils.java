@@ -39,7 +39,7 @@ import java.util.*;
  * @author Arjen Poutsma
  * @since 16 April 2001
  */
-public abstract class StringUtils {
+public abstract class StringUtils extends org.apache.commons.lang3.StringUtils {
 
 	private static final String FOLDER_SEPARATOR = "/";
 
