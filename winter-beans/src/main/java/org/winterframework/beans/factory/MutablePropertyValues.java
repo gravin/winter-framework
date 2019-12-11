@@ -48,6 +48,11 @@ public class MutablePropertyValues implements PropertyValues {
                 (this.processedProperties != null && this.processedProperties.contains(propertyName)));
     }
 
+    @Override
+    public boolean isEmpty() {
+        return this.propertyValueList.isEmpty();
+    }
+
     public MutablePropertyValues addPropertyValue(PropertyValue pv) {
         for (int i = 0; i < this.propertyValueList.size(); i++) {
             PropertyValue currentPv = this.propertyValueList.get(i);
@@ -59,5 +64,13 @@ public class MutablePropertyValues implements PropertyValues {
         }
         this.propertyValueList.add(pv);
         return this;
+    }
+
+    public void setConverted() {
+        this.converted = true;
+    }
+
+    public boolean isConverted() {
+        return this.converted;
     }
 }

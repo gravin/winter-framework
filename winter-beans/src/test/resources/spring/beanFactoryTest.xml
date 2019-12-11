@@ -7,5 +7,9 @@ second line
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-    <bean id="myTestBean" class="org.winterframework.tests.MyTestBean"></bean>
+    <bean id="myTestBean" class="org.winterframework.tests.MyTestBean">
+        <property name="testStr">
+            <value>我来测试下属性设置</value>
+        </property>
+    </bean>
 </beans>

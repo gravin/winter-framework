@@ -61,7 +61,8 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     }
 
     public void setConstructorArgumentValues(ConstructorArgumentValues constructorArgumentValues) {
-        this.constructorArgumentValues = constructorArgumentValues;
+        this.constructorArgumentValues =
+                (constructorArgumentValues != null ? constructorArgumentValues : new ConstructorArgumentValues());
     }
 
     public MutablePropertyValues getPropertyValues() {
@@ -69,10 +70,20 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
     }
 
     public void setPropertyValues(MutablePropertyValues propertyValues) {
-        this.propertyValues = propertyValues;
+        this.propertyValues = (propertyValues != null ? propertyValues : new MutablePropertyValues());
     }
 
-    public AbstractBeanDefinition() {
+    protected AbstractBeanDefinition() {
+        this(null, null);
+    }
+
+    /**
+     * Create a new AbstractBeanDefinition with the given
+     * constructor argument values and property values.
+     */
+    protected AbstractBeanDefinition(ConstructorArgumentValues cargs, MutablePropertyValues pvs) {
+        setConstructorArgumentValues(cargs);
+        setPropertyValues(pvs);
     }
 
     protected AbstractBeanDefinition(BeanDefinition original) {
