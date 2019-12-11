@@ -7,6 +7,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements BeanFactory {
 
+    private TypeConverter typeConverter;
+
+    protected TypeConverter getCustomTypeConverter() {
+        return this.typeConverter;
+    }
+
     private final Map<String, RootBeanDefinition> mergedBeanDefinitions =
             new ConcurrentHashMap<String, RootBeanDefinition>(64);
 

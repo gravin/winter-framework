@@ -1,6 +1,6 @@
 package org.winterframework.beans.factory;
 
-public interface BeanWrapper {
+public interface BeanWrapper extends ConfigurablePropertyAccessor {
 
     public Object getWrappedInstance();
 

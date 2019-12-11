@@ -73,4 +73,8 @@ public class MutablePropertyValues implements PropertyValues {
     public boolean isConverted() {
         return this.converted;
     }
+
+    public List<PropertyValue> getPropertyValueList() {
+        return this.propertyValueList;
+    }
 }

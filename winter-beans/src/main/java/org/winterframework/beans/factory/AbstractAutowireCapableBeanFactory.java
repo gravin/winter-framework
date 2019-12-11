@@ -11,6 +11,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
     private InstantiationStrategy instantiationStrategy = new CglibSubclassingInstantiationStrategy();
 
+
     @Override
     protected Object createBean(String beanName, RootBeanDefinition mbd, Object[] args) {
         Object beanInstance = doCreateBean(beanName, mbd, args);
@@ -54,15 +55,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 try {
                     bw.setPropertyValues(mpvs);
                     return;
-                }
-                catch (BeansException ex) {
-                    throw new BeanCreationException(
-                            mbd.getResourceDescription(), beanName, "Error setting property values", ex);
+                } catch (Throwable ex) {
+                    throw new RuntimeException("Error setting property values", ex);
                 }
             }
             original = mpvs.getPropertyValueList();
-        }
-        else {
+        } else {
             original = Arrays.asList(pvs.getPropertyValues());
         }
 
@@ -78,8 +76,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         for (PropertyValue pv : original) {
             if (pv.isConverted()) {
                 deepCopy.add(pv);
-            }
-            else {
+            } else {
                 String propertyName = pv.getName();
                 Object originalValue = pv.getValue();
                 Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
@@ -96,14 +93,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                         pv.setConvertedValue(convertedValue);
                     }
                     deepCopy.add(pv);
-                }
-                else if (convertible && originalValue instanceof TypedStringValue &&
+                } else if (convertible && originalValue instanceof TypedStringValue &&
                         !((TypedStringValue) originalValue).isDynamic() &&
                         !(convertedValue instanceof Collection || ObjectUtils.isArray(convertedValue))) {
                     pv.setConvertedValue(convertedValue);
                     deepCopy.add(pv);
-                }
-                else {
+                } else {
                     resolveNecessary = true;
                     deepCopy.add(new PropertyValue(pv, convertedValue));
                 }
@@ -116,14 +111,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         // Set our (possibly massaged) deep copy.
         try {
             bw.setPropertyValues(new MutablePropertyValues(deepCopy));
-        }
-        catch (BeansException ex) {
-            throw new BeanCreationException(
-                    mbd.getResourceDescription(), beanName, "Error setting property values", ex);
+        } catch (Exception ex) {
+            throw new RuntimeException("Error setting property values", ex);
         }
     }
-
-
 
     protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, Object[] args) {
         // Make sure bean class is actually resolved at this point.
