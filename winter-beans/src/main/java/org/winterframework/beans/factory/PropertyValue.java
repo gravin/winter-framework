@@ -25,6 +25,12 @@ public class PropertyValue {
         this.convertedValue = original.convertedValue;
     }
 
+    public PropertyValue(PropertyValue original, Object newValue) {
+        this.name = original.getName();
+        this.value = newValue;
+        this.optional = original.isOptional();
+    }
+
     public String getName() {
         return name;
     }
