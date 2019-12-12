@@ -1,6 +1,9 @@
 package org.winterframework.beans.factory;
 
 
+import org.winterframework.beans.PropertyValue;
+import org.winterframework.beans.PropertyValues;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

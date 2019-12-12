@@ -18,6 +18,7 @@ package org.winterframework.core.io.support;
 
 
 
+import org.winterframework.core.io.Resource;
 import org.winterframework.util.Assert;
 import org.winterframework.util.ClassUtils;
 
@@ -97,6 +98,42 @@ public abstract class PropertiesLoaderUtils {
 			}
 		}
 		return props;
+	}
+
+
+	/**
+	 * Load properties from the given resource (in ISO-8859-1 encoding).
+	 * @param resource the resource to load from
+	 * @return the populated Properties instance
+	 * @throws IOException if loading failed
+	 * @see #fillProperties(java.util.Properties, Resource)
+	 */
+	public static Properties loadProperties(Resource resource) throws IOException {
+		Properties props = new Properties();
+		fillProperties(props, resource);
+		return props;
+	}
+
+	/**
+	 * Fill the given properties from the given resource (in ISO-8859-1 encoding).
+	 * @param props the Properties instance to fill
+	 * @param resource the resource to load from
+	 * @throws IOException if loading failed
+	 */
+	public static void fillProperties(Properties props, Resource resource) throws IOException {
+		InputStream is = resource.getInputStream();
+		try {
+			String filename = resource.getFilename();
+			if (filename != null && filename.endsWith(XML_FILE_EXTENSION)) {
+				props.loadFromXML(is);
+			}
+			else {
+				props.load(is);
+			}
+		}
+		finally {
+			is.close();
+		}
 	}
 
 }

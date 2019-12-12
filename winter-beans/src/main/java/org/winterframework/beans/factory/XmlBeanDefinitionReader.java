@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.CharacterData;
 import org.w3c.dom.*;
+import org.winterframework.beans.PropertyValue;
 import org.winterframework.core.io.ClassPathResource;
 import org.winterframework.core.io.Resource;
 import org.winterframework.core.io.support.PropertiesLoaderUtils;

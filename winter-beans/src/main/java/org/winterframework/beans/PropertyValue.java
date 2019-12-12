@@ -1,4 +1,4 @@
-package org.winterframework.beans.factory;
+package org.winterframework.beans;
 
 public class PropertyValue {
 

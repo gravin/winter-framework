@@ -2,6 +2,7 @@ package org.winterframework.core.io;
 
 import org.winterframework.util.Assert;
 import org.winterframework.util.ClassUtils;
+import org.winterframework.util.StringUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,5 +47,10 @@ public class ClassPathResource implements Resource {
         }
         this.path = pathToUse;
         this.classLoader = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
+    }
+
+    @Override
+    public String getFilename() {
+        return StringUtils.getFilename(this.path);
     }
 }
