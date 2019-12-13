@@ -85,10 +85,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 Object originalValue = pv.getValue();
                 Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
                 Object convertedValue = resolvedValue;
-                boolean convertible = bw.isWritableProperty(propertyName) &&
-                        !PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
+                boolean convertible = bw.isWritableProperty(propertyName)
+//                        &&
+//                        !PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName)
+;
                 if (convertible) {
-                    convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
+//                    convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
                 }
                 // Possibly store converted value in merged bean definition,
                 // in order to avoid re-conversion for every created bean instance.

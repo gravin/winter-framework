@@ -28,12 +28,15 @@ public class CachedIntrospectionResults {
     static final Map<Class<?>, Object> classCache = new WeakHashMap<Class<?>, Object>();
 
 
-    /** Stores the BeanInfoFactory instances */
+    /**
+     * Stores the BeanInfoFactory instances
+     */
     private static List<BeanInfoFactory> beanInfoFactories = SpringFactoriesLoader.loadFactories(
             BeanInfoFactory.class, CachedIntrospectionResults.class.getClassLoader());
 
     /**
      * Create CachedIntrospectionResults for the given bean class.
+     *
      * @param beanClass the bean class to analyze
      * @return the corresponding CachedIntrospectionResults
      * @throws BeansException in case of introspection failure
@@ -48,8 +51,7 @@ public class CachedIntrospectionResults {
         if (value instanceof Reference) {
             Reference<CachedIntrospectionResults> ref = (Reference<CachedIntrospectionResults>) value;
             results = ref.get();
-        }
-        else {
+        } else {
             results = (CachedIntrospectionResults) value;
         }
         if (results == null) {
@@ -58,8 +60,7 @@ public class CachedIntrospectionResults {
                 synchronized (classCache) {
                     classCache.put(beanClass, results);
                 }
-            }
-            else {
+            } else {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Not strongly caching class [" + beanClass.getName() + "] because it is not cache-safe");
                 }
@@ -72,8 +73,20 @@ public class CachedIntrospectionResults {
         return results;
     }
 
+
+    /**
+     * The BeanInfo object for the introspected bean class
+     */
+    private final BeanInfo beanInfo;
+
+    /**
+     * PropertyDescriptor objects keyed by property name String
+     */
+    private final Map<String, PropertyDescriptor> propertyDescriptorCache;
+
     /**
      * Create a new CachedIntrospectionResults instance for the given class.
+     *
      * @param beanClass the bean class to analyze
      * @throws BeansException in case of introspection failure
      */
@@ -92,25 +105,24 @@ public class CachedIntrospectionResults {
             }
             if (beanInfo == null) {
                 // If none of the factories supported the class, fall back to the default
-                beanInfo = (shouldIntrospectorIgnoreBeaninfoClasses ?
-                        Introspector.getBeanInfo(beanClass, Introspector.IGNORE_ALL_BEANINFO) :
-                        Introspector.getBeanInfo(beanClass));
+                beanInfo =
+                        Introspector.getBeanInfo(beanClass);
             }
             this.beanInfo = beanInfo;
 
             // Only bother with flushFromCaches if the Introspector actually cached...
-            if (!shouldIntrospectorIgnoreBeaninfoClasses) {
-                // Immediately remove class from Introspector cache, to allow for proper
-                // garbage collection on class loader shutdown - we cache it here anyway,
-                // in a GC-friendly manner. In contrast to CachedIntrospectionResults,
-                // Introspector does not use WeakReferences as values of its WeakHashMap!
-                Class<?> classToFlush = beanClass;
-                do {
-                    Introspector.flushFromCaches(classToFlush);
-                    classToFlush = classToFlush.getSuperclass();
-                }
-                while (classToFlush != null && classToFlush != Object.class);
+
+            // Immediately remove class from Introspector cache, to allow for proper
+            // garbage collection on class loader shutdown - we cache it here anyway,
+            // in a GC-friendly manner. In contrast to CachedIntrospectionResults,
+            // Introspector does not use WeakReferences as values of its WeakHashMap!
+            Class<?> classToFlush = beanClass;
+            do {
+                Introspector.flushFromCaches(classToFlush);
+                classToFlush = classToFlush.getSuperclass();
             }
+            while (classToFlush != null && classToFlush != Object.class);
+
 
             if (logger.isTraceEnabled()) {
                 logger.trace("Caching PropertyDescriptors for class [" + beanClass.getName() + "]");
@@ -121,7 +133,7 @@ public class CachedIntrospectionResults {
             PropertyDescriptor[] pds = this.beanInfo.getPropertyDescriptors();
             for (PropertyDescriptor pd : pds) {
                 if (Class.class.equals(beanClass) &&
-                        ("classLoader".equals(pd.getName()) ||  "protectionDomain".equals(pd.getName()))) {
+                        ("classLoader".equals(pd.getName()) || "protectionDomain".equals(pd.getName()))) {
                     // Ignore Class.getClassLoader() and getProtectionDomain() methods - nobody needs to bind to those
                     continue;
                 }
@@ -131,11 +143,10 @@ public class CachedIntrospectionResults {
                             (pd.getPropertyEditorClass() != null ?
                                     "; editor [" + pd.getPropertyEditorClass().getName() + "]" : ""));
                 }
-                pd = buildGenericTypeAwarePropertyDescriptor(beanClass, pd);
+//                pd = buildGenericTypeAwarePropertyDescriptor(beanClass, pd);
                 this.propertyDescriptorCache.put(pd.getName(), pd);
             }
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             throw new FatalBeanException("Failed to obtain BeanInfo for class [" + beanClass.getName() + "]", ex);
         }
     }

@@ -2,13 +2,11 @@ package org.winterframework.beans.factory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.winterframework.beans.BeansException;
-import org.winterframework.beans.CachedIntrospectionResults;
-import org.winterframework.beans.InvalidPropertyException;
-import org.winterframework.beans.PropertyAccessorUtils;
+import org.winterframework.beans.*;
 import org.winterframework.util.Assert;
 
 import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +37,26 @@ public class BeanWrapperImpl implements BeanWrapper {
     }
 
 
+    @Override
+    public Object getPropertyValue(String propertyName) {
+        return null;
+    }
+
+    @Override
+    public void setPropertyValue(String propertyName, Object value) {
+
+    }
+
+    @Override
+    public void setPropertyValue(PropertyValue pv) {
+
+    }
+
+    @Override
+    public void setPropertyValues(PropertyValues pvs) {
+
+    }
+
     public boolean isWritableProperty(String propertyName) {
         try {
             PropertyDescriptor pd = getPropertyDescriptorInternal(propertyName);
@@ -61,14 +79,15 @@ public class BeanWrapperImpl implements BeanWrapper {
     protected PropertyDescriptor getPropertyDescriptorInternal(String propertyName) throws BeansException {
         Assert.notNull(propertyName, "Property name must not be null");
         BeanWrapperImpl nestedBw = getBeanWrapperForPropertyPath(propertyName);
-        return nestedBw.getCachedIntrospectionResults().getPropertyDescriptor(propertyName);
+        return null;
+//        return nestedBw.getCachedIntrospectionResults().getPropertyDescriptor(propertyName);
     }
 
 
     private CachedIntrospectionResults getCachedIntrospectionResults() {
         Assert.state(this.wrappedInstance != null, "BeanWrapper does not hold a bean instance");
         if (this.cachedIntrospectionResults == null) {
-            this.cachedIntrospectionResults = CachedIntrospectionResults.forClass(getWrappedClass());
+//            this.cachedIntrospectionResults = CachedIntrospectionResults.forClass(getWrappedClass());
         }
         return this.cachedIntrospectionResults;
     }
@@ -81,5 +100,25 @@ public class BeanWrapperImpl implements BeanWrapper {
         } else {
             return this;
         }
+    }
+
+    @Override
+    public void registerCustomEditor(Class<?> requiredType, PropertyEditor propertyEditor) {
+
+    }
+
+    @Override
+    public void registerCustomEditor(Class<?> requiredType, String propertyPath, PropertyEditor propertyEditor) {
+
+    }
+
+    @Override
+    public PropertyEditor findCustomEditor(Class<?> requiredType, String propertyPath) {
+        return null;
+    }
+
+    @Override
+    public <T> T convertIfNecessary(Object value, Class<T> requiredType) {
+        return null;
     }
 }
