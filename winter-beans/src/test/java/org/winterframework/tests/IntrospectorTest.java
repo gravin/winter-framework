@@ -44,12 +44,11 @@ public class IntrospectorTest {
     }
 
     public static void main(String[] args) throws IntrospectionException {
-        Method[] publicDeclaredMethods = getPublicDeclaredMethods(Test2.class);
-        if (publicDeclaredMethods == null || publicDeclaredMethods.length == 0) {
-            System.out.println("none");
-        } else {
-            System.out.println(Arrays.stream(publicDeclaredMethods).map(m -> m.getName()).collect(Collectors.joining(",")));
-        }
+        Class<?> clazz = Test2.class;
+        System.out.println(Arrays.stream(clazz.getMethods()).map(m -> m==null?"":m.toString()).collect(Collectors.joining(",")));
+        Method[] publicDeclaredMethods = getPublicDeclaredMethods(clazz);
+        System.out.println(Arrays.stream(publicDeclaredMethods).map(m -> m==null?"":m.toString()).collect(Collectors.joining(",")));
+
         System.exit(0);
         // TODO Auto-generated methodstub
         BeanInfo beanInfo = Introspector.getBeanInfo(Person.class, Introspector.IGNORE_ALL_BEANINFO);
