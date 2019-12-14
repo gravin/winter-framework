@@ -1,8 +1,11 @@
 package org.winterframework.beans.factory;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class TypedStringValue {
     private String value;
 
+    @JSONField(serialize = false)
     private volatile Object targetType;
 
     private Object source;

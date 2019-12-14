@@ -1,10 +1,15 @@
 package org.winterframework.beans.factory;
 
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.winterframework.beans.BeanWrapper;
+import org.winterframework.beans.BeanWrapperImpl;
 import org.winterframework.beans.PropertyValue;
 import org.winterframework.beans.PropertyValues;
+import org.winterframework.core.MethodParameter;
 import org.winterframework.util.ObjectUtils;
 
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -90,7 +95,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 //                        !PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName)
 ;
                 if (convertible) {
-//                    convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
+                    convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
                 }
                 // Possibly store converted value in merged bean definition,
                 // in order to avoid re-conversion for every created bean instance.
@@ -121,6 +126,18 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             throw new RuntimeException("Error setting property values", ex);
         }
     }
+
+    private Object convertForProperty(Object value, String propertyName, BeanWrapper bw, TypeConverter converter) {
+        if (converter instanceof BeanWrapperImpl) {
+            return ((BeanWrapperImpl) converter).convertForProperty(value, propertyName);
+        }
+        else {
+            PropertyDescriptor pd = bw.getPropertyDescriptor(propertyName);
+            MethodParameter methodParam = BeanUtils.getWriteMethodParameter(pd);
+            return converter.convertIfNecessary(value, pd.getPropertyType(), methodParam);
+        }
+    }
+
 
     protected BeanWrapper createBeanInstance(String beanName, RootBeanDefinition mbd, Object[] args) {
         // Make sure bean class is actually resolved at this point.

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.winterframework.core.io.support.SpringFactoriesLoader;
 import org.winterframework.util.ClassUtils;
+import org.winterframework.util.StringUtils;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -19,6 +20,11 @@ import java.util.WeakHashMap;
 public class CachedIntrospectionResults {
 
     private static final Logger logger = LoggerFactory.getLogger(CachedIntrospectionResults.class);
+
+    public static final String IGNORE_BEANINFO_PROPERTY_NAME = "spring.beaninfo.ignore";
+
+
+    private static final boolean shouldIntrospectorIgnoreBeaninfoClasses = false;
 
     /**
      * Map keyed by class containing CachedIntrospectionResults.
@@ -105,24 +111,25 @@ public class CachedIntrospectionResults {
             }
             if (beanInfo == null) {
                 // If none of the factories supported the class, fall back to the default
-                beanInfo =
-                        Introspector.getBeanInfo(beanClass);
+                beanInfo = (shouldIntrospectorIgnoreBeaninfoClasses ?
+                        Introspector.getBeanInfo(beanClass, Introspector.IGNORE_ALL_BEANINFO) :
+                        Introspector.getBeanInfo(beanClass));
             }
             this.beanInfo = beanInfo;
 
             // Only bother with flushFromCaches if the Introspector actually cached...
-
-            // Immediately remove class from Introspector cache, to allow for proper
-            // garbage collection on class loader shutdown - we cache it here anyway,
-            // in a GC-friendly manner. In contrast to CachedIntrospectionResults,
-            // Introspector does not use WeakReferences as values of its WeakHashMap!
-            Class<?> classToFlush = beanClass;
-            do {
-                Introspector.flushFromCaches(classToFlush);
-                classToFlush = classToFlush.getSuperclass();
+            if (!shouldIntrospectorIgnoreBeaninfoClasses) {
+                // Immediately remove class from Introspector cache, to allow for proper
+                // garbage collection on class loader shutdown - we cache it here anyway,
+                // in a GC-friendly manner. In contrast to CachedIntrospectionResults,
+                // Introspector does not use WeakReferences as values of its WeakHashMap!
+                Class<?> classToFlush = beanClass;
+                do {
+                    Introspector.flushFromCaches(classToFlush);
+                    classToFlush = classToFlush.getSuperclass();
+                }
+                while (classToFlush != null && classToFlush != Object.class);
             }
-            while (classToFlush != null && classToFlush != Object.class);
-
 
             if (logger.isTraceEnabled()) {
                 logger.trace("Caching PropertyDescriptors for class [" + beanClass.getName() + "]");
@@ -149,5 +156,32 @@ public class CachedIntrospectionResults {
         } catch (IntrospectionException ex) {
             throw new FatalBeanException("Failed to obtain BeanInfo for class [" + beanClass.getName() + "]", ex);
         }
+    }
+
+    PropertyDescriptor getPropertyDescriptor(String name) {
+        PropertyDescriptor pd = this.propertyDescriptorCache.get(name);
+        if (pd == null && StringUtils.hasLength(name)) {
+            // Same lenient fallback checking as in PropertyTypeDescriptor...
+            pd = this.propertyDescriptorCache.get(name.substring(0, 1).toLowerCase() + name.substring(1));
+            if (pd == null) {
+                pd = this.propertyDescriptorCache.get(name.substring(0, 1).toUpperCase() + name.substring(1));
+            }
+        }
+        return (pd == null || pd instanceof GenericTypeAwarePropertyDescriptor ? pd :
+                buildGenericTypeAwarePropertyDescriptor(getBeanClass(), pd));
+    }
+
+    private PropertyDescriptor buildGenericTypeAwarePropertyDescriptor(Class<?> beanClass, PropertyDescriptor pd) {
+        try {
+            return new GenericTypeAwarePropertyDescriptor(beanClass, pd.getName(), pd.getReadMethod(),
+                    pd.getWriteMethod(), pd.getPropertyEditorClass());
+        }
+        catch (IntrospectionException ex) {
+            throw new FatalBeanException("Failed to re-introspect class [" + beanClass.getName() + "]", ex);
+        }
+    }
+
+    Class<?> getBeanClass() {
+        return this.beanInfo.getBeanDescriptor().getBeanClass();
     }
 }

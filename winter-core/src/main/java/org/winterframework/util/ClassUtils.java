@@ -247,4 +247,115 @@ public abstract class ClassUtils {
 		}
 		return result;
 	}
+
+	/**
+	 * Return all interfaces that the given class implements as array,
+	 * including ones implemented by superclasses.
+	 * <p>If the class itself is an interface, it gets returned as sole interface.
+	 * @param clazz the class to analyze for interfaces
+	 * @return all interfaces that the given object implements as array
+	 */
+	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz) {
+		return getAllInterfacesForClass(clazz, null);
+	}
+
+	/**
+	 * Return all interfaces that the given class implements as array,
+	 * including ones implemented by superclasses.
+	 * <p>If the class itself is an interface, it gets returned as sole interface.
+	 * @param clazz the class to analyze for interfaces
+	 * @param classLoader the ClassLoader that the interfaces need to be visible in
+	 * (may be {@code null} when accepting all declared interfaces)
+	 * @return all interfaces that the given object implements as array
+	 */
+	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz, ClassLoader classLoader) {
+		Set<Class> ifcs = getAllInterfacesForClassAsSet(clazz, classLoader);
+		return ifcs.toArray(new Class[ifcs.size()]);
+	}
+
+	/**
+	 * Return all interfaces that the given class implements as Set,
+	 * including ones implemented by superclasses.
+	 * <p>If the class itself is an interface, it gets returned as sole interface.
+	 * @param clazz the class to analyze for interfaces
+	 * @param classLoader the ClassLoader that the interfaces need to be visible in
+	 * (may be {@code null} when accepting all declared interfaces)
+	 * @return all interfaces that the given object implements as Set
+	 */
+	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz, ClassLoader classLoader) {
+		Assert.notNull(clazz, "Class must not be null");
+		if (clazz.isInterface() && isVisible(clazz, classLoader)) {
+			return Collections.singleton(clazz);
+		}
+		Set<Class> interfaces = new LinkedHashSet<Class>();
+		while (clazz != null) {
+			Class<?>[] ifcs = clazz.getInterfaces();
+			for (Class<?> ifc : ifcs) {
+				interfaces.addAll(getAllInterfacesForClassAsSet(ifc, classLoader));
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return interfaces;
+	}
+
+	/**
+	 * Check whether the given class is visible in the given ClassLoader.
+	 * @param clazz the class to check (typically an interface)
+	 * @param classLoader the ClassLoader to check against (may be {@code null},
+	 * in which case this method will always return {@code true})
+	 */
+	public static boolean isVisible(Class<?> clazz, ClassLoader classLoader) {
+		if (classLoader == null) {
+			return true;
+		}
+		try {
+			Class<?> actualClass = classLoader.loadClass(clazz.getName());
+			return (clazz == actualClass);
+			// Else: different interface class found...
+		}
+		catch (ClassNotFoundException ex) {
+			// No interface class found...
+			return false;
+		}
+	}
+
+	/**
+	 * Determine whether the given class has a public method with the given signature,
+	 * and return it if available (else return {@code null}).
+	 * <p>In case of any signature specified, only returns the method if there is a
+	 * unique candidate, i.e. a single public method with the specified name.
+	 * <p>Essentially translates {@code NoSuchMethodException} to {@code null}.
+	 * @param clazz the clazz to analyze
+	 * @param methodName the name of the method
+	 * @param paramTypes the parameter types of the method
+	 * (may be {@code null} to indicate any signature)
+	 * @return the method, or {@code null} if not found
+	 * @see Class#getMethod
+	 */
+	public static Method getMethodIfAvailable(Class<?> clazz, String methodName, Class<?>... paramTypes) {
+		Assert.notNull(clazz, "Class must not be null");
+		Assert.notNull(methodName, "Method name must not be null");
+		if (paramTypes != null) {
+			try {
+				return clazz.getMethod(methodName, paramTypes);
+			}
+			catch (NoSuchMethodException ex) {
+				return null;
+			}
+		}
+		else {
+			Set<Method> candidates = new HashSet<Method>(1);
+			Method[] methods = clazz.getMethods();
+			for (Method method : methods) {
+				if (methodName.equals(method.getName())) {
+					candidates.add(method);
+				}
+			}
+			if (candidates.size() == 1) {
+				return candidates.iterator().next();
+			}
+			return null;
+		}
+	}
+
 }

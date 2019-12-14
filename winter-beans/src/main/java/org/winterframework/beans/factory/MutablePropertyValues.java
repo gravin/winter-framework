@@ -1,6 +1,7 @@
 package org.winterframework.beans.factory;
 
 
+import com.alibaba.fastjson.annotation.JSONField;
 import org.winterframework.beans.PropertyValue;
 import org.winterframework.beans.PropertyValues;
 
@@ -27,8 +28,7 @@ public class MutablePropertyValues implements PropertyValues {
             for (PropertyValue pv : pvs) {
                 this.propertyValueList.add(new PropertyValue(pv));
             }
-        }
-        else {
+        } else {
             this.propertyValueList = new ArrayList<PropertyValue>(0);
         }
     }
@@ -37,6 +37,7 @@ public class MutablePropertyValues implements PropertyValues {
         this.propertyValueList =
                 (propertyValueList != null ? propertyValueList : new ArrayList<PropertyValue>());
     }
+
 
     public PropertyValue[] getPropertyValues() {
         return this.propertyValueList.toArray(new PropertyValue[this.propertyValueList.size()]);

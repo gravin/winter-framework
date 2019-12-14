@@ -1,5 +1,7 @@
 package org.winterframework.beans;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class PropertyValue {
 
     private final String name;

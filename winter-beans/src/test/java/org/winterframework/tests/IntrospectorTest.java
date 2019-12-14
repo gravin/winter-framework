@@ -44,16 +44,16 @@ public class IntrospectorTest {
     }
 
     public static void main(String[] args) throws IntrospectionException {
-        Class<?> clazz = Test2.class;
-        System.out.println(Arrays.stream(clazz.getMethods()).map(m -> m==null?"":m.toString()).collect(Collectors.joining(",")));
-        Method[] publicDeclaredMethods = getPublicDeclaredMethods(clazz);
-        System.out.println(Arrays.stream(publicDeclaredMethods).map(m -> m==null?"":m.toString()).collect(Collectors.joining(",")));
-
-        System.exit(0);
+//        Class<?> clazz = Test1.class;
+//        System.out.println(Arrays.stream(clazz.getMethods()).map(m -> m==null?"":m.toString()).collect(Collectors.joining(",")));
+//        Method[] publicDeclaredMethods = getPublicDeclaredMethods(clazz);
+//        System.out.println(Arrays.stream(publicDeclaredMethods).map(m -> m==null?"":m.toString()).collect(Collectors.joining(",")));
+//
+//        System.exit(0);
         // TODO Auto-generated methodstub
-        BeanInfo beanInfo = Introspector.getBeanInfo(Person.class, Introspector.IGNORE_ALL_BEANINFO);
-        System.out.println(JSON.toJSONString(beanInfo));
-
+        BeanInfo beanInfo = Introspector.getBeanInfo(Test1.class, Introspector.IGNORE_ALL_BEANINFO);
+        System.out.println(JSON.toJSONString(beanInfo.getMethodDescriptors(),true));
+        System.exit(0);
         System.out.println("BeanDescriptor===========================================");
         BeanDescriptor beanDesc = beanInfo.getBeanDescriptor();
         Class cls = beanDesc.getBeanClass();

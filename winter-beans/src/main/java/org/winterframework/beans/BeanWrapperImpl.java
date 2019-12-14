@@ -1,20 +1,21 @@
-package org.winterframework.beans.factory;
+package org.winterframework.beans;
 
+import com.sun.corba.se.impl.io.TypeMismatchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.winterframework.beans.*;
 import org.winterframework.util.Assert;
 
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BeanWrapperImpl implements BeanWrapper {
 
     private static final Logger logger = LoggerFactory.getLogger(BeanWrapperImpl.class);
 
-    private Object wrappedInstance;
+    /**
+     * The wrapped object
+     */
+    private Object object;
 
 
     /**
@@ -29,11 +30,15 @@ public class BeanWrapperImpl implements BeanWrapper {
     }
 
     public Object getWrappedInstance() {
-        return wrappedInstance;
+        return object;
     }
 
-    public void setWrappedInstance(Object wrappedInstance) {
-        this.wrappedInstance = wrappedInstance;
+    public final Class<?> getWrappedClass() {
+        return (this.object != null ? this.object.getClass() : null);
+    }
+
+    public void setWrappedInstance(Object object) {
+        this.object = object;
     }
 
 
@@ -79,17 +84,7 @@ public class BeanWrapperImpl implements BeanWrapper {
     protected PropertyDescriptor getPropertyDescriptorInternal(String propertyName) throws BeansException {
         Assert.notNull(propertyName, "Property name must not be null");
         BeanWrapperImpl nestedBw = getBeanWrapperForPropertyPath(propertyName);
-        return null;
-//        return nestedBw.getCachedIntrospectionResults().getPropertyDescriptor(propertyName);
-    }
-
-
-    private CachedIntrospectionResults getCachedIntrospectionResults() {
-        Assert.state(this.wrappedInstance != null, "BeanWrapper does not hold a bean instance");
-        if (this.cachedIntrospectionResults == null) {
-//            this.cachedIntrospectionResults = CachedIntrospectionResults.forClass(getWrappedClass());
-        }
-        return this.cachedIntrospectionResults;
+        return nestedBw.getCachedIntrospectionResults().getPropertyDescriptor(propertyName);
     }
 
     protected BeanWrapperImpl getBeanWrapperForPropertyPath(String propertyPath) {
@@ -100,6 +95,14 @@ public class BeanWrapperImpl implements BeanWrapper {
         } else {
             return this;
         }
+    }
+
+    private CachedIntrospectionResults getCachedIntrospectionResults() {
+        Assert.state(this.object != null, "BeanWrapper does not hold a bean instance");
+        if (this.cachedIntrospectionResults == null) {
+            this.cachedIntrospectionResults = CachedIntrospectionResults.forClass(getWrappedClass());
+        }
+        return this.cachedIntrospectionResults;
     }
 
     @Override
@@ -120,5 +123,20 @@ public class BeanWrapperImpl implements BeanWrapper {
     @Override
     public <T> T convertIfNecessary(Object value, Class<T> requiredType) {
         return null;
+    }
+
+    public Object convertForProperty(Object value, String propertyName) throws TypeMismatchException {
+        PropertyDescriptor pd = getCachedIntrospectionResults().getPropertyDescriptor(propertyName);
+        if (pd == null) {
+            throw new InvalidPropertyException(value.getClass(), propertyName,
+                    "No property '" + propertyName + "' found");
+        }
+        return convertForProperty(propertyName, null, value, new TypeDescriptor(property(pd)));
+    }
+
+    private Object convertForProperty(String propertyName, Object oldValue, Object newValue, TypeDescriptor td)
+            throws TypeMismatchException {
+
+        return convertIfNecessary(propertyName, oldValue, newValue, td.getType(), td);
     }
 }
